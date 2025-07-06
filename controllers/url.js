@@ -5,7 +5,7 @@ const URL = require("../models/url");
 async function handleGenerateNewShortURL(req, res) {
     const body = req.body;
     if(!body.url) return res.status(400).json({ error: "url is required" });
-    const shortID = nanoid();
+    const shortID = nanoid(6);
 
     await URL.create({
         shortId: shortID,
@@ -13,7 +13,7 @@ async function handleGenerateNewShortURL(req, res) {
         visitedHistory: [],
     });
 
-    return res.json({id: shortID})
+    return res.render("home", {id: shortID});
 }
 
 async function handleGetAnalytics(req, res){
@@ -25,7 +25,15 @@ async function handleGetAnalytics(req, res){
     });
 }
 
+async function handleDeletebyID(req, res){
+    const shortId = req.params.shortId;
+    await URL.findOneAndDelete({ shortId });
+
+    return res.render("home");
+}
+
 module.exports = {
     handleGenerateNewShortURL,
     handleGetAnalytics,
+    handleDeletebyID
 }
